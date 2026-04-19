@@ -1,18 +1,31 @@
-// 📁 data/remote/firebase/StorageManager.kt
 package com.example.luontopeli.data.remote.firebase
 
-import android.net.Uri
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Offline-tilassa toimiva tallennushallinta (no-op).
+ * Offline-tilassa toimiva tallennushallinta (stub).
+ *
+ * Kuvat säilytetään laitteen paikallisessa tallennustilassa.
+ * Firebase Storage vaatisi Blaze-tilille päivittämisen (luottokortti),
+ * joten kuvien pilvitallennus on jätetty pois.
+ *
+ * Löytöjen metadata (nimi, sijainti, kasvilaji) tallennetaan
+ * Firestoreen — kuvat pysyvät paikallisesti.
  */
 @Singleton
 class StorageManager @Inject constructor() {
 
-    suspend fun uploadImage(imageUri: Uri, fileName: String): Result<String> {
-        // Palautetaan paikallinen polku, koska emme käytä pilveä
-        return Result.success(imageUri.toString())
+    /**
+     * Palauttaa paikallisen tiedostopolun pilvi-URL:n sijaan.
+     * Kuva on jo tallennettu laitteelle CameraViewModelissa.
+     */
+    suspend fun uploadImage(localFilePath: String, spotId: String): Result<String> {
+        return Result.success(localFilePath)
+    }
+
+    /** Ei tee mitään — kuvat ovat vain paikallisesti. */
+    suspend fun deleteImage(spotId: String): Result<Unit> {
+        return Result.success(Unit)
     }
 }

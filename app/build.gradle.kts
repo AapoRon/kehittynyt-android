@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -76,9 +77,15 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.osmdroid.android)
-    implementation(libs.accompanist.permissions)
-    implementation(libs.mlkit.image.labeling)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+
+    // Guava - ratkaisee Firebase + CameraX ListenableFuture ristiriidan
+    implementation("com.google.guava:guava:32.1.3-android")
 
     // Compose BOM
     val composeBom = platform(libs.androidx.compose.bom)

@@ -1,25 +1,30 @@
-// 📁 data/remote/firebase/AuthManager.kt
 package com.example.luontopeli.data.remote.firebase
 
-import java.util.UUID
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Offline-tilassa toimiva käyttäjähallinta.
- * Generoi paikallisen UUID:n käyttäjätunnisteeksi.
- * @Singleton varmistaa, että sama ID pysyy käytössä koko sovelluksen ajan.
- */
 @Singleton
-class AuthManager @Inject constructor() {
-    private val localUserId: String = UUID.randomUUID().toString()
+class AuthManager @Inject constructor(
+    private val auth: FirebaseAuth
+) {
+    val currentUserId: String
+        get() = auth.currentUser?.uid ?: "anonymous"
 
-    val currentUserId: String get() = localUserId
-    val isSignedIn: Boolean get() = true
+    val isSignedIn: Boolean
+        get() = auth.currentUser != null
 
-    suspend fun signInAnonymously(): Result<String> = Result.success(localUserId)
+    suspend fun signInAnonymously(): Result<String> {
+        return try {
+            val result = auth.signInAnonymously().await()
+            Result.success(result.user?.uid ?: "unknown")
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     fun signOut() {
-        /* Ei tarvita offline-tilassa */
+        auth.signOut()
     }
 }
